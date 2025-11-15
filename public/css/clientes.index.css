@@ -1,0 +1,387 @@
+/* ==================================================
+   CSS Nativo Minimalista - Página de Clientes
+   ================================================== */
+
+/* Variables */
+:root {
+    --color-primary: #3b82f6;
+    --color-primary-dark: #2563eb;
+    --color-success: #10b981;
+    --color-error: #ef4444;
+    --color-warning: #f59e0b;
+    --color-text-dark: #1f2937;
+    --color-text-muted: #6b7280;
+    --color-bg-light: #ffffff;
+    --color-bg-muted: #f9fafb;
+    --color-border: #e5e7eb;
+    --radius: 0.5rem;
+    --transition: all 0.2s ease-in-out;
+}
+
+/* ==================================================
+   Layout general
+   ================================================== */
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--color-text-dark);
+    background-color: var(--color-bg-muted);
+}
+
+.py-12 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* ==================================================
+   Encabezado
+   ================================================== */
+.page-header {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-dark);
+    margin-bottom: 1rem;
+}
+
+/* ==================================================
+   Tarjeta principal
+   ================================================== */
+.card {
+    background-color: var(--color-bg-light);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    transition: var(--transition);
+}
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+/* ==================================================
+   Mensajes de éxito
+   ================================================== */
+.message-success {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #dcfce7;
+    color: #065f46;
+    border-radius: var(--radius);
+    border: 1px solid #a7f3d0;
+}
+
+/* ==================================================
+   Controles superiores (botón y filtros)
+   ================================================== */
+.controls-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Botón Crear */
+.btn-create {
+    background-color: var(--color-primary);
+    color: var(--color-bg-light);
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    border: none;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    cursor: pointer;
+}
+.btn-create:hover {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-1px);
+}
+
+/* ==================================================
+   Filtros
+   ================================================== */
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.filter-input,
+.filter-select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background-color: var(--color-bg-light);
+    font-size: 0.875rem;
+    color: var(--color-text-dark);
+    transition: border-color 0.15s ease;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+.filter-button {
+    padding: 0.5rem 1rem;
+    background-color: var(--color-primary);
+    color: var(--color-bg-light);
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.filter-button:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.reset-button {
+    padding: 0.5rem 1rem;
+    background-color: #e5e7eb;
+    color: var(--color-text-dark);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: var(--transition);
+}
+.reset-button:hover {
+    background-color: #d1d5db;
+}
+
+/* ==================================================
+   Tabla
+   ================================================== */
+.table-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+    background-color: var(--color-bg-light);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.data-table th,
+.data-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.875rem;
+    vertical-align: middle;
+}
+
+.data-table thead th {
+    background-color: var(--color-bg-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.75rem;
+}
+
+.data-table tbody tr:hover {
+    background-color: #f1f5f9;
+    transition: background-color 0.2s ease;
+}
+
+/* ==================================================
+   Acciones
+   ================================================== */
+.action-links a,
+.action-links button {
+    margin-right: 0.5rem;
+    text-decoration: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: var(--transition);
+}
+
+.link-view {
+    color: var(--color-primary);
+}
+.link-edit {
+    color: var(--color-warning);
+}
+.link-delete {
+    color: var(--color-error);
+}
+
+.action-links a:hover,
+.action-links button:hover {
+    text-decoration: underline;
+    opacity: 0.85;
+}
+
+/* ==================================================
+   Estado vacío
+   ================================================== */
+.empty-state {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--color-text-muted);
+}
+
+/* ==================================================
+   Modal dialog
+   ================================================== */
+dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 1.5rem;
+    width: 320px;
+    max-width: 90%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+dialog button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+dialog button[type="button"] {
+    background-color: #ccc;
+    color: #000;
+}
+
+dialog button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+}
+
+dialog div {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+/* ==================================================
+   Select2
+   ================================================== */
+.select2-container--default .select2-selection--single {
+    height: 38px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 0.9rem;
+    color: #333;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+}
+
+.select2-container--default .select2-selection--single:hover {
+    border-color: #888;
+}
+
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default .select2-selection--single.select2-selection--open {
+    border-color: #5b73e8;
+    box-shadow: 0 0 0 2px rgba(91, 115, 232, 0.2);
+    outline: none;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #555 transparent transparent transparent;
+}
+
+.select2-container--default .select2-results__option {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
+.select2-container--default .select2-results__option--highlighted {
+    background-color: #5b73e8;
+    color: #fff;
+}
+
+/* ==================================================
+   Responsive mejorado
+   ================================================== */
+@media (max-width: 1024px) {
+    .controls-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-form {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .filter-input,
+    .filter-select,
+    .filter-button,
+    .reset-button {
+        width: 100%;
+    }
+
+    .btn-create {
+        width: 100%;
+        text-align: center;
+    }
+
+    .data-table {
+        display: block;
+        overflow-x: auto;
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .filter-form > div {
+        width: 100%;
+    }
+
+    .action-links a,
+    .action-links button {
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .controls-header {
+        gap: 0.5rem;
+    }
+
+    .card-content {
+        padding: 1rem;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+}
+

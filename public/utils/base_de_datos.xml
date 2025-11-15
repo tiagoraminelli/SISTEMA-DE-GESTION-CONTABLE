@@ -1,0 +1,103 @@
+Módulo ERP	Entidades Centrales
+Clientes y Ventas	Clientes, Vendedores, Facturas de Venta (Cabecera y Detalle), Pedidos.
+Proveedores y Compras	Proveedores, Órdenes de Compra, Facturas de Compra (Cabecera y Detalle).
+Stock/Inventario	Artículos, Depósitos, Movimientos de Stock, Listas de Precios.
+Tesorería	Cajas/Bancos, Formas de Pago, Recibos de Cobro, Órdenes de Pago.
+Contabilidad	Plan de Cuentas, Ejercicios Contables, Asientos Contables, Libros.
+
+
+ Tablas Maestras (Catálogos) 📚
+Estas tablas son la base de referencia para el resto del sistema.
+
+Tabla	Atributo	Tipo de Dato	Clave/Notas	Descripción
+Clientes	IdCliente	INT	PK, Autonumérico	Identificador único del cliente.
+CUIT_NIF	VARCHAR(15)	Único	Número de identificación fiscal.
+RazonSocial	VARCHAR(100)	No Nulo	Nombre legal del cliente.
+Domicilio	VARCHAR(255)		Dirección de facturación.
+Email	VARCHAR(100)		Contacto.
+Articulos	IdArticulo	INT	PK, Autonumérico	Identificador único del artículo.
+Codigo	VARCHAR(20)	Único	Código interno o SKU.
+Descripcion	VARCHAR(150)	No Nulo	Nombre del producto/servicio.
+CostoUnitario	DECIMAL(18, 2)	No Nulo	Costo promedio o última compra.
+PrecioVenta	DECIMAL(18, 2)	No Nulo	Precio de venta al público.
+Tipos_Comprobante	IdTipo	INT	PK	Ej: 1 (Factura A), 2 (Factura B), 3 (Nota Crédito).
+Descripcion	VARCHAR(50)	No Nulo	Descripción del tipo de documento.
+AfectaStock	BOOLEAN		Indica si el comprobante mueve inventario.
+Plan_de_Cuentas	CodCuenta	VARCHAR(20)	PK	Código contable (ej: 1.1.1.001).
+Nombre	VARCHAR(100)	No Nulo	Nombre de la cuenta (ej: Caja, Mercaderías).
+EsImputable	BOOLEAN		Si permite registrar movimientos directos.
+
+
+¡Absolutamente! Aquí tienes el diseño completo de la base de datos para tu Producto Mínimo Viable (MVP) de gestión (similar a TANGO), incluyendo todas las tablas, sus atributos (campos), tipos de datos sugeridos y las claves primarias (PK) y foráneas (FK) para establecer las relaciones.
+
+Utilizaremos tipos de datos comunes en SQL Server o PostgreSQL.
+
+1. Tablas Maestras (Catálogos) 📚
+Estas tablas son la base de referencia para el resto del sistema.
+
+Tabla	Atributo	Tipo de Dato	Clave/Notas	Descripción
+Clientes
+dCliente	INT	PK, Autonumérico	Identificador único del cliente.
+CUIT_NIF	VARCHAR(15)	Único	Número de identificación fiscal.
+RazonSocial	VARCHAR(100)	No Nulo	Nombre legal del cliente.
+Domicilio	VARCHAR(255)		Dirección de facturación.
+Email	VARCHAR(100)		Contacto.
+
+Articulos
+IdArticulo	INT	PK, Autonumérico	Identificador único del artículo.
+Codigo	VARCHAR(20)	Único	Código interno o SKU.
+Descripcion	VARCHAR(150)	No Nulo	Nombre del producto/servicio.
+Cantidad	DECIMAL(18, 2)	No Nulo	Cantidad en stock.
+CostoUnitario	DECIMAL(18, 2)	No Nulo	Costo promedio o última compra.
+PrecioVenta	DECIMAL(18, 2)	No Nulo	Precio de venta al público.
+
+Tipos_Comprobante
+IdTipo	INT	PK	Ej: 1 (Factura A), 2 (Factura B), 3 (Nota Crédito).
+Descripcion	VARCHAR(50)	No Nulo	Descripción del tipo de documento.
+AfectaStock	BOOLEAN		Indica si el comprobante mueve inventario.
+Plan_de_Cuentas
+CodCuenta	VARCHAR(20)	PK	Código contable (ej: 1.1.1.001).
+Nombre	VARCHAR(100)	No Nulo	Nombre de la cuenta (ej: Caja, Mercaderías).
+EsImputable	BOOLEAN		Si permite registrar movimientos directos.
+
+Exportar a Hojas de cálculo
+2. Tablas Transaccionales (Ventas y Stock) 📊
+Estas tablas registran la actividad diaria.
+
+Tabla	Atributo	Tipo de Dato	Clave/Notas	Descripción
+Ventas_Cabecera	IdVenta	INT	PK, Autonumérico	Identificador único de la factura.
+Fecha	DATE	No Nulo	Fecha de emisión de la factura.
+PuntoVenta	INT	No Nulo	Sucursal o punto de emisión.
+Numero	INT	No Nulo	Número correlativo del comprobante.
+IdCliente	INT	FK a Clientes	Cliente al que se vendió.
+IdTipo	INT	FK a Tipos_Comprobante	Tipo de documento emitido.
+TotalNeto	DECIMAL(18, 2)	No Nulo	Total sin impuestos.
+TotalImpuestos	DECIMAL(18, 2)	No Nulo	Total de IVA u otros impuestos.
+TotalFinal	DECIMAL(18, 2)	No Nulo	Total a pagar por el cliente.
+Ventas_Detalle	IdDetalle	INT	PK, Autonumérico	Identificador único del ítem.
+IdVenta	INT	FK a Ventas_Cabecera	Factura a la que pertenece.
+IdArticulo	INT	FK a Articulos	Artículo vendido.
+Cantidad	DECIMAL(18, 2)	No Nulo	Cantidad vendida.
+PrecioUnitario	DECIMAL(18, 2)	No Nulo	Precio unitario aplicado en la venta.
+Subtotal	DECIMAL(18, 2)	No Nulo	Cantidad * PrecioUnitario.
+Stock_Movimientos	IdMovimiento	INT	PK, Autonumérico	Identificador único del movimiento de stock.
+Fecha	TIMESTAMP	No Nulo	Fecha y hora del movimiento.
+IdArticulo	INT	FK a Articulos	Artículo afectado.
+Tipo	VARCHAR(1)	No Nulo	'E' (Entrada) o 'S' (Salida).
+Cantidad	DECIMAL(18, 2)	No Nulo	Cantidad de unidades que se movieron.
+Referencia	VARCHAR(50)		Comprobante que originó el movimiento (ej: "FV-0001-0001").
+
+
+ Tablas Transaccionales (Contabilidad) 🧾
+Estas tablas garantizan el registro de la Partida Doble.
+
+Tabla	Atributo	Tipo de Dato	Clave/Notas	Descripción
+Asientos_Contables	IdAsiento	INT	PK, Autonumérico	Identificador único del asiento.
+Fecha	DATE	No Nulo	Fecha de registro del asiento.
+ComprobanteRef	VARCHAR(50)		Referencia del comprobante que genera el asiento (ej: Factura 123).
+Descripcion	VARCHAR(255)		Descripción breve del motivo del asiento.
+Asientos_Detalle	IdDetalle	INT	PK, Autonumérico	Identificador único de la línea.
+IdAsiento	INT	FK a Asientos_Contables	Asiento al que pertenece la línea.
+CodCuenta	VARCHAR(20)	FK a Plan_de_Cuentas	Cuenta contable debitada/acreditada.
+Debe	DECIMAL(18, 2)	No Nulo	Importe al Debe.
+Haber	DECIMAL(18, 2)	No Nulo	Importe al Haber.
