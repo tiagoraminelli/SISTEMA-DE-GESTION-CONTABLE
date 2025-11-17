@@ -6,210 +6,222 @@ use App\Models\Cliente;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-use Illuminate\Support\Facades\Validator;
-
 class ClienteController extends Controller
 {
     /**
-     * Mostrar todos los clientes
+     * Listado con filtros
      */
     public function index(Request $request)
     {
-        // 1. Inicia la consulta base y aplica el ordenamiento
-        $query = Cliente::orderBy('RazonSocial');
+        $query = Cliente::query()->orderBy('RazonSocial');
 
-        // 2. Obtener parámetros de filtro desde la solicitud (URL)
-        $search = $request->input('search');
-        $activo = $request->input('activo');
-        $iva = $request->input('iva');
-
-        // 3. Aplicar filtro de búsqueda general (Razon Social o CUIT)
-        if ($search) {
+        // Filtro: búsqueda general
+        if ($request->filled('search')) {
+            $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-                // Búsqueda insensible a mayúsculas/minúsculas en RazonSocial
-                $q->where('RazonSocial', 'LIKE', '%' . $search . '%')
-                    // Búsqueda exacta o parcial en CUIT
-                    ->orWhere('CUIT', 'LIKE', '%' . $search . '%');
+                $q->where('RazonSocial', 'LIKE', "%{$search}%")
+                    ->orWhere('CUIT', 'LIKE', "%{$search}%");
             });
         }
 
-        // 4. Aplicar filtro por estado (Activo: 1 o Inactivo: 0)
-        // Usamos !== null y !== '' para que el filtro se aplique solo si se selecciona Activo o Inactivo
-        if ($activo !== null && $activo !== '') {
-            // Convertimos a entero para asegurar la comparación con el campo booleano/numérico
-            $query->where('Activo', (int)$activo);
+        // Filtro: activo (0 / 1)
+        if ($request->filled('activo')) {
+            $query->where('Activo', (int) $request->input('activo'));
         }
 
-        // 5. Aplicar filtro por Condición IVA (ej: RI, CF, EX, MT)
-        if ($iva) {
-            switch ($iva) {
-                case 'RI':
-                    $iva = 'Responsable Inscripto';
-                    break;
-                case 'CF':
-                    $iva = 'Consumidor Final';
-                    break;
-                case 'EX':
-                    $iva = 'Exento';
-                    break;
-                case 'MT':
-                    $iva = 'Monotributista';
-                    break;
-                default:
-                    $iva = null; // Si no es un valor válido, no aplicamos filtro
-                    break;
+        // Filtro: IVA (siglas)
+        if ($request->filled('iva')) {
+            $ivaMap = [
+                'RI' => 'Responsable Inscripto',
+                'CF' => 'Consumidor Final',
+                'EX' => 'Exento',
+                'MT' => 'Monotributista',
+            ];
+
+            $iva = $ivaMap[$request->iva] ?? null;
+
+            if ($iva) {
+                $query->where('CondicionIVA', $iva);
             }
-            $query->where('CondicionIVA', $iva);
         }
 
-        // 6. Paginar los resultados.
-        $clientes = $query->paginate(8)->appends($request->except('page'));
+        $clientes = $query->paginate(8)->appends($request->query());
 
-        // 7. Retornar la vista con los resultados filtrados.
-        // La paginación en la vista usará ->appends() para mantener los filtros en la URL.
         return view('clientes.index', compact('clientes'));
     }
 
-    /**
-     * Mostrar formulario para crear un cliente
-     */
     public function create()
     {
         return view('clientes.create');
     }
 
+    /**
+     * Crear Cliente
+     */
     public function store(Request $request)
     {
-        // Validación
-        $validated = $request->validate([
-            'CUIT' => 'nullable|string|unique:Cliente,CUIT|max:11',
-            'TipoDocumento' => ['nullable', Rule::in(['CUIT', 'CUIL', 'DNI', 'Pasaporte', 'Otro'])],
-            'NroDocumento' => 'nullable|string|max:15',
-            'CondicionIVA' => ['nullable', Rule::in(['Responsable Inscripto', 'Monotributista', 'Consumidor Final', 'Exento'])],
-            'NroIngBrutos' => 'nullable|string|max:20',
-            'CondicionIngBrutos' => ['nullable', Rule::in(['Local', 'Multilateral'])],
-            'ResponsabilidadSocial' => ['required', Rule::in(['Física', 'Jurídica'])],
-            'RazonSocial' => 'required|string|max:150',
-            'LimiteCredito' => 'nullable|numeric|min:0',
-            'Activo' => 'nullable|boolean',
-            'DomicilioFiscal' => 'nullable|string|max:255',
-            'Localidad' => 'nullable|string|max:100',
-            'Provincia' => 'nullable|string|max:100',
-            'CodigoPostal' => 'nullable|string|max:10',
-            'Pais' => 'nullable|string|max:100',
-            'Email' => 'nullable|email|max:100',
-            'Telefono' => 'nullable|string|max:50',
-            'Observaciones' => 'nullable|string',
-            'FechaAlta' => 'nullable|date',
-        ]);
+        $validated = $this->validateCliente($request);
 
-        // Ajustes para checkbox y enums
-        $validated['Activo'] = $request->has('Activo') ? true : false;
+        $validated['Activo'] = $request->boolean('Activo');
 
-        // Si checkbox de ResponsabilidadSocial viene marcado como Juridica, lo usamos, sino Física
-        if ($request->input('ResponsabilidadSocial') === 'Jurídica') {
-            $validated['ResponsabilidadSocial'] = 'Jurídica';
-        } else {
-            $validated['ResponsabilidadSocial'] = 'Física';
-        }
-
-        // Crear el cliente
         Cliente::create($validated);
 
         return redirect()->route('clientes.index')
             ->with('success', 'Cliente creado correctamente.');
     }
 
-
     /**
-     * Mostrar un cliente específico
+     * Ver Cliente + sus asientos
      */
-    // Ejemplo en el controlador ClienteController.php
-
     public function show(Cliente $cliente)
     {
-        // Obtener los asientos asociados al cliente y paginarlos, ordenados por fecha
         $asientos = $cliente->asientosContables()
-            ->with('movimientos.cuentaContable') // Precargar relaciones necesarias
-            ->orderBy('fecha', 'desc')
-            ->paginate(2); // Paginar de 10 en 10
+            ->with('movimientos.cuentaContable')
+            ->paginate(2);
 
-        return view('clientes.show', [
-            'cliente' => $cliente,
-            'asientos' => $asientos, // Pasar la colección paginada
-        ]);
+        return view('clientes.show', compact('cliente', 'asientos'));
     }
-    /**
-     * Mostrar formulario para editar un cliente
-     */
+
     public function edit(Cliente $cliente)
     {
         return view('clientes.edit', compact('cliente'));
     }
 
     /**
-     * Actualizar un cliente existente
+     * Actualizar Cliente
      */
     public function update(Request $request, Cliente $cliente)
     {
-        // ✅ Solo 'Activo' se maneja como checkbox
-        $request->merge([
-            'Activo' => $request->has('Activo'),
-        ]);
-
-        $validated = $request->validate([
-            'RazonSocial' => 'required|string|max:150',
-            'CUIT' => 'nullable|string|max:11|unique:Cliente,CUIT,' . $cliente->idCliente . ',idCliente',
-            'TipoDocumento' => ['nullable', Rule::in(['CUIT', 'CUIL', 'DNI', 'Pasaporte', 'Otro'])],
-            'NroDocumento' => 'nullable|string|max:15',
-            'CondicionIVA' => 'nullable|string|max:50',
-            'NroIngBrutos' => 'nullable|string|max:20',
-            'CondicionIngBrutos' => 'nullable|string|max:50',
-            // ✅ Ahora es un select, no un checkbox
-            'ResponsabilidadSocial' => ['required', Rule::in(['Física', 'Jurídica'])],
-            'LimiteCredito' => 'nullable|numeric|min:0',
-            'Activo' => 'boolean',
-            'DomicilioFiscal' => 'nullable|string|max:255',
-            'Localidad' => 'nullable|string|max:100',
-            'Provincia' => 'nullable|string|max:100',
-            'CodigoPostal' => 'nullable|string|max:10',
-            'Pais' => 'nullable|string|max:100',
-            'Email' => 'nullable|email|max:100',
-            'Telefono' => 'nullable|string|max:50',
-            'Observaciones' => 'nullable|string',
-            'FechaAlta' => 'nullable|date',
-        ]);
+        $validated = $this->validateCliente($request, $cliente);
+        $validated['Activo'] = $request->boolean('Activo');
 
         $cliente->update($validated);
 
         return redirect()->route('clientes.index')
-            ->with('success', 'Cliente ' . $cliente->RazonSocial . ' actualizado correctamente.');
+            ->with('success', "Cliente {$cliente->RazonSocial} actualizado correctamente.");
     }
 
     /**
-     * Eliminar un cliente
+     * Baja lógica (Soft Delete)
      */
     public function destroy(Cliente $cliente)
     {
-        // Marcar como inactivo en vez de eliminar
-        $cliente->update([
-            'Activo' => false
-        ]);
+        $cliente->update(['Activo' => false]);
 
         return redirect()->route('clientes.index')
-            ->with('success', 'Cliente  ' . $cliente->RazonSocial . ' eliminado correctamente.');
+            ->with('success', "Cliente {$cliente->RazonSocial} eliminado correctamente.");
     }
 
     /**
-     * Restaurar un cliente inactivo
+     * Restaurar
      */
     public function restore(Cliente $cliente)
     {
-        $cliente->update([
-            'Activo' => true
-        ]);
+        $cliente->update(['Activo' => true]);
 
         return redirect()->route('clientes.index')
-            ->with('success', 'Cliente ' . $cliente->RazonSocial . ' restaurado correctamente.');
+            ->with('success', "Cliente {$cliente->RazonSocial} restaurado correctamente.");
+    }
+
+    /**
+     * Validación común para store/update
+     */
+
+
+    private function validateCliente(Request $request, Cliente $cliente = null)
+    {
+        return $request->validate(
+            [
+                'RazonSocial' => 'required|string|min:3|max:150',
+                'CUIT' => [
+                    'nullable',
+                    'string',
+                    'min:11',
+                    'max:11',
+                    Rule::unique('Cliente', 'CUIT')->ignore($cliente->idCliente ?? null, 'idCliente'),
+                ],
+                'TipoDocumento' => ['nullable', Rule::in(['CUIT', 'CUIL', 'DNI', 'Pasaporte', 'Otro'])],
+                'NroDocumento' => 'nullable|string|min:7|max:9',
+                'CondicionIVA' => ['nullable', Rule::in(['Responsable Inscripto', 'Monotributista', 'Consumidor Final', 'Exento'])],
+                'NroIngBrutos' => 'nullable|string|min:7|max:20',
+                'CondicionIngBrutos' => ['nullable', Rule::in(['Local', 'Multilateral'])],
+                'ResponsabilidadSocial' => ['required', Rule::in(['Física', 'Jurídica'])],
+                'LimiteCredito' => 'required|numeric|min:0',
+                'DomicilioFiscal' => 'nullable|string|min:3|max:255',
+                'Localidad' => 'nullable|string|min:3|max:100',
+                'Provincia' => 'nullable|string|min:3|max:100',
+                'CodigoPostal' => 'nullable|numeric|min:1000|max:9999',
+                'Pais' => 'nullable|string|max:100',
+                'Email' => 'nullable|email|max:100',
+                'Telefono' => 'nullable|string|min:3|max:50',
+                'Observaciones' => 'nullable|string',
+                'FechaAlta' => 'nullable|date',
+            ],
+            [
+                // Razon Social
+                'RazonSocial.required' => 'La razón social es obligatoria.',
+                'RazonSocial.max' => 'La razón social no puede superar los 150 caracteres.',
+                'RazonSocial.min' => 'La razón social debe tener al menos 3 caracteres.',
+
+                // CUIT
+                'CUIT.max' => 'El CUIT no puede tener más de 11 dígitos.',
+                'CUIT.unique' => 'El CUIT ingresado ya está registrado en el sistema.',
+                'CUIT.min' => 'El CUIT debe tener al menos 11 dígitos.',
+
+                // Tipo de documento
+                'TipoDocumento.in' => 'El tipo de documento seleccionado no es válido.',
+
+                // Número de documento
+                'NroDocumento.max' => 'El número de documento no puede superar los 9 caracteres.',
+                'NroDocumento.min' => 'El número de documento debe tener al menos 7 caracteres.',
+
+                // IVA
+                'CondicionIVA.in' => 'La condición de IVA seleccionada no es válida.',
+
+                // Ingresos Brutos
+                'NroIngBrutos.max' => 'El número de Ingresos Brutos no puede superar los 20 caracteres.',
+                'CondicionIngBrutos.in' => 'La condición de Ingresos Brutos no es válida.',
+
+                // Responsabilidad Social
+                'ResponsabilidadSocial.required' => 'Debe seleccionar el tipo de responsabilidad social.',
+                'ResponsabilidadSocial.in' => 'La responsabilidad social seleccionada no es válida.',
+
+                // Limite de crédito
+                'LimiteCredito.required' => 'El límite de crédito es obligatorio.',
+
+                // Límite de crédito
+                'LimiteCredito.numeric' => 'El límite de crédito debe ser un número válido.',
+                'LimiteCredito.min' => 'El límite de crédito no puede ser negativo.',
+
+                // Campos generales
+                'DomicilioFiscal.max' => 'El domicilio fiscal no puede superar los 255 caracteres.',
+                'DomicilioFiscal.min' => 'El domicilio fiscal debe tener al menos 3 caracteres.',
+                'Localidad.max' => 'La localidad no puede superar los 100 caracteres.',
+                'Localidad.min' => 'La localidad debe tener al menos 3 caracteres.',
+                'Provincia.max' => 'La provincia no puede superar los 100 caracteres.',
+                'Provincia.min' => 'La provincia debe tener al menos 3 caracteres.',
+
+                'CodigoPostal.max' => 'El código postal no puede superar los 4 caracteres.',
+                'CodigoPostal.numeric' => 'El código postal debe ser un número válido.',
+                'CodigoPostal.min' => 'El código postal debe tener al menos 4 caracteres.',
+
+                'Pais.max' => 'El país no puede superar los 100 caracteres.',
+
+                // Email
+                'Email.email' => 'El correo electrónico no tiene un formato válido.',
+                'Email.max' => 'El correo electrónico no puede superar los 100 caracteres.',
+
+                // Teléfono
+                'Telefono.max' => 'El teléfono no puede superar los 50 caracteres.',
+                'Telefono.min' => 'El teléfono debe tener al menos 3 caracteres.',
+
+
+                // Observaciones
+                'Observaciones.string' => 'Las observaciones deben ser texto válido.',
+
+                // Fecha
+                'FechaAlta.date' => 'La fecha de alta debe ser una fecha válida.',
+            ]
+        );
     }
 }
