@@ -65,4 +65,14 @@ class Cliente extends Model
         // Esto resuelve el error "RelationNotFoundException"
         return $this->hasMany(AsientoContable::class, 'Cliente_id', 'idCliente');
     }
+
+    public function scopeActivos($query)
+    {
+        return $query->where('Activo', true);
+    }
+
+    public function scopeInactivos($query)
+    {
+        return $query->where('Activo', false);
+    }
 }
