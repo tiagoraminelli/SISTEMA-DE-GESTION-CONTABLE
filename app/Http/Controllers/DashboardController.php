@@ -54,7 +54,7 @@ class DashboardController extends Controller
 
         if ($clienteId) {
             $balancePorTipoQuery->join('asientos_contables as ac', 'mc.AsientoContable_id', '=', 'ac.idAsiento')
-                                ->where('ac.Cliente_id', $clienteId);
+                ->where('ac.Cliente_id', $clienteId);
         }
 
         $balancePorTipo = $balancePorTipoQuery->get()->keyBy('tipo');
@@ -84,7 +84,7 @@ class DashboardController extends Controller
 
         if ($clienteId) {
             $balanceGeneralQuery->join('asientos_contables as ac', 'mc.AsientoContable_id', '=', 'ac.idAsiento')
-                                ->where('ac.Cliente_id', $clienteId);
+                ->where('ac.Cliente_id', $clienteId);
         }
 
         $balanceGeneral = $balanceGeneralQuery->pluck('saldo', 'tipo');
@@ -96,18 +96,20 @@ class DashboardController extends Controller
         // -------------------------------------------------------------
         // 5. TOP CUENTAS MÁS USADAS
         // -------------------------------------------------------------
-        $topCuentasQuery = DB::table('movimientos_contables')
-            ->select('CuentaContable_id', DB::raw('COUNT(*) as usos'))
-            ->groupBy('CuentaContable_id')
+        $topCuentasQuery = DB::table('movimientos_contables as mc')
+            ->join('cuentas_contables as cc', 'mc.CuentaContable_id', '=', 'cc.idCuentaContable')
+            ->select(
+                'mc.CuentaContable_id',
+                'cc.codigo',
+                'cc.nombre',
+                DB::raw('COUNT(*) as usos')
+            )
+            ->groupBy('mc.CuentaContable_id', 'cc.codigo', 'cc.nombre')
             ->orderByDesc('usos')
             ->limit(5);
 
-        if ($clienteId) {
-            $topCuentasQuery->join('asientos_contables as ac', 'movimientos_contables.AsientoContable_id', '=', 'ac.idAsiento')
-                            ->where('ac.Cliente_id', $clienteId);
-        }
-
         $topCuentas = $topCuentasQuery->get();
+
 
         // -------------------------------------------------------------
         // 6. ÚLTIMOS ASIENTOS

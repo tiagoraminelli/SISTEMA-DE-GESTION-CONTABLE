@@ -1,7 +1,7 @@
 <x-app-layout>
     <link rel="stylesheet" href="{{ asset('css/clientes.index.css') }}">
     <x-slot name="header">
-        <h2 class="page-header">PANEL DE CONTROL DEL SISTEMA CONTABLE</h2>
+        <h2 class="page-header">PANEL DE CONTROL DEL SISTEMA CONTABLE </h2>
     </x-slot>
 
     <div class="py-12">
@@ -14,14 +14,14 @@
                         <label for="cliente_id">Filtrar por Cliente:</label>
                         <select name="cliente_id" id="cliente_id" class="filter-select" onchange="this.form.submit()">
                             <option value="">-- Todos --</option>
-                            @foreach(\App\Models\Cliente::all() as $cliente)
+                            @foreach (\App\Models\Cliente::all() as $cliente)
                                 <option value="{{ $cliente->idCliente }}"
                                     {{ isset($clienteId) && $clienteId == $cliente->idCliente ? 'selected' : '' }}>
                                     {{ $cliente->RazonSocial }}
                                 </option>
                             @endforeach
                         </select>
-                        @if(isset($clienteId))
+                        @if (isset($clienteId))
                             <a href="{{ url('dashboard') }}" class="reset-button">Limpiar</a>
                         @endif
                     </form>
@@ -64,7 +64,9 @@
                                         <td>{{ $balance->total_haber }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="3" class="empty-state">No hay datos de balance.</td></tr>
+                                    <tr>
+                                        <td colspan="3" class="empty-state">No hay datos de balance.</td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -92,24 +94,29 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>ID Cuenta</th>
+                                    <th>Código</th>
+                                    <th>Nombre</th>
                                     <th>Usos</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($topCuentas as $cuenta)
                                     <tr>
-                                        <td>{{ $cuenta->CuentaContable_id }}</td>
+                                        <td>{{ $cuenta->codigo }}</td>
+                                        <td>{{ $cuenta->nombre }}</td>
                                         <td>{{ $cuenta->usos }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="2" class="empty-state">No hay datos de cuentas.</td></tr>
+                                    <tr>
+                                        <td colspan="3" class="empty-state">No hay datos de cuentas.</td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+
 
             {{-- ÚLTIMOS ASIENTOS --}}
             <div class="card mt-4">
