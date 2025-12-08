@@ -1,0 +1,215 @@
+/* welcome.index.css - Estética Ajustada al Logo (Púrpura y Gris) */
+
+/* --- Colores Base --- */
+:root {
+    /* Basado en el logo: Púrpura oscuro como color principal */
+    --color-primary: #6C22CC; /* Púrpura fuerte (para Login/Acción principal) */
+    --color-secondary: #A064E7; /* Púrpura claro (para Register/Outline) */
+
+    /* Colores de texto y fondo */
+    --color-text-light: #f5f5f5; /* Blanco/Gris claro */
+    --color-text-dark: #343a40; /* Gris oscuro (Texto) */
+    --color-bg-light: #F8F8F8; /* Fondo muy claro (cercano al gris del logo) */
+    --color-bg-dark: #1e1e1e; /* Fondo oscuro moderno */
+    --color-card-light: #ffffff;
+    --color-card-dark: #2a2a2a;
+
+    --shadow-light: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --shadow-dark: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* --- Reset y Centrado Global --- */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-bg-light);
+    color: var(--color-text-dark);
+    transition: background-color 0.4s, color 0.4s;
+
+    /* --- PROPIEDADES DE CENTRADO --- */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+body.dark {
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-light);
+}
+
+/* --- Card central --- */
+.welcome-card {
+    background-color: #5e17ea; /* Gris muy claro cercano al logo */
+    color: var(--color-bg-light);
+    max-width: 480px;
+    width: 100%;
+    padding: 3rem;
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.5s ease;
+    border: 1px solid #e0e0e0;
+}
+
+
+body.dark .welcome-card {
+    background-color: var(--color-card-dark);
+    color: var(--color-text-light);
+    box-shadow: var(--shadow-dark);
+    border: 1px solid #3d3d3d;
+}
+
+/* --- Logo --- */
+.welcome-card img {
+    width: 14rem;
+    margin-bottom: 4rem;
+
+}
+
+/* --- Título principal --- */
+.welcome-card h1 {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.5px;
+}
+
+/* --- Slogan / mensaje --- */
+.welcome-card p {
+    font-size: 1.05rem;
+    margin-bottom: 2.5rem;
+    color: var(--color-bg-light);
+    max-width: 90%;
+}
+
+body.dark .welcome-card p {
+    color: #b0b0b0;
+}
+
+/* --- Botones Container (Actualizado a .buttons) --- */
+.buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* --- Botones base (Ajustado) --- */
+.welcome-card .btn {
+    display: inline-block;
+    padding: 0.85rem 2.2rem;
+    border-radius: 0.6rem;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    margin: 0;
+}
+
+.welcome-card .btn:active {
+    transform: scale(0.98);
+}
+
+/* Botón login (Principal - Sólido - PÚRPURA) */
+.btn-login {
+    background-color: var(--color-bg-light); /* #6C22CC */
+    color: var(--color-text-dark);
+}
+
+.btn-login:hover {
+    background-color: var(--color-card-light); /* Púrpura más oscuro */
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(108, 34, 204, 0.3);
+}
+
+/* Botón register (Secundario - Outline - PÚRPURA CLARO) */
+.btn-register {
+   background-color: var(--color-bg-light); /* #6C22CC */
+    color: var(--color-text-dark);
+    box-shadow: none;
+}
+
+.btn-register:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-card-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(160, 100, 231, 0.2);
+}
+
+body.dark .btn-register {
+    color: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+
+body.dark .btn-register:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-card-dark);
+}
+
+/* Botón Dashboard (Acción clara - Gris oscuro) */
+.btn-dashboard {
+    background-color: var(--color-text-light); /* #343a40 */
+    color:var(--color-bg-dark);
+}
+
+.btn-dashboard:hover {
+    background-color: var(--color-text-light);
+    transform: translateY(-1px);
+}
+
+/* --- Footer --- */
+.welcome-card footer {
+    margin-top: 3rem;
+    font-size: 0.85rem;
+    color: #909090;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 1.5rem;
+    width: 100%;
+}
+
+body.dark .welcome-card footer {
+    color: #888888;
+    border-top: 1px solid #333333;
+}
+
+/* --- Responsive (Ajustado) --- */
+@media (max-width: 640px) {
+    .welcome-card {
+        padding: 2rem 1.5rem;
+        border-radius: 1rem;
+    }
+
+    .welcome-card h1 {
+        font-size: 1.8rem;
+    }
+
+    .welcome-card p {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Stack buttons vertically */
+    .buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.75rem;
+    }
+
+    .welcome-card .btn {
+        width: 100%;
+        margin: 0;
+    }
+}

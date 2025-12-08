@@ -6,6 +6,7 @@ use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CuentaContableController;
 use App\Http\Controllers\AsientoContableController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EstadoFinancieroController;
 
 
 Route::middleware(['auth'])->group(function () {
@@ -19,6 +20,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Rutas para asientos contables
     Route::resource('asiento_contable', AsientoContableController::class);
+
+    // Rutas para estado financiero
+    Route::get('estado_financiero', [App\Http\Controllers\EstadoFinancieroController::class, 'index'])
+         ->name('estado_financiero.index');
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

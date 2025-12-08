@@ -1,9 +1,11 @@
+/* ------------------- Contenedor general ------------------- */
 .container-sm {
     max-width: 80rem;
     margin: 0 auto;
     padding: 0 1rem;
 }
 
+/* ------------------- Tarjetas ------------------- */
 .card {
     background-color: #ffffff;
     border-radius: 0.75rem;
@@ -13,21 +15,24 @@
     margin-bottom: 2rem;
 }
 
+/* ------------------- Headers y títulos ------------------- */
 .page-header {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #e5e7eb;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
 }
 
 .detail-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #111827;
+    color: #1f2937;
     margin-bottom: 1.5rem;
     border-bottom: 2px solid #e5e7eb;
     padding-bottom: 0.5rem;
 }
 
+/* ------------------- Grid de detalles ------------------- */
 .detail-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -42,6 +47,74 @@
     border-left: 4px solid #3b82f6;
 }
 
+.detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
+/* ------------------- Filtro de fechas ------------------- */
+form.mb-6 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+form.mb-6 > div {
+    display: flex;
+    flex-direction: column;
+}
+
+form.mb-6 input[type="date"] {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+form.mb-6 input[type="date"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+form.mb-6 button,
+form.mb-6 a {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    border: 1px solid #d1d5db;
+    background-color: #ffffff;
+    color: #374151;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+form.mb-6 button:hover,
+form.mb-6 a:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+@media (max-width: 640px) {
+    form.mb-6 {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    form.mb-6 > div {
+        width: 100%;
+    }
+
+    form.mb-6 button,
+    form.mb-6 a {
+        width: 100%;
+    }
+}
+
+/* ------------------- Tarjetas T-Account ------------------- */
 .t-account-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -67,23 +140,27 @@
     padding-bottom: 0.5rem;
     border-bottom: 2px solid #3b82f6;
 }
+
 .t-account-code {
     font-size: 1rem;
     font-weight: 700;
     color: #4b5563;
 }
+
 .t-account-balance {
     font-size: 1.35rem;
     font-weight: 700;
     text-align: right;
     line-height: 1.2;
 }
+
 .t-account-name {
     font-size: 1.1rem;
     font-weight: 600;
     color: #1f2937;
     margin-bottom: 1rem;
 }
+
 .t-account-body {
     display: flex;
     justify-content: space-between;
@@ -91,19 +168,29 @@
     align-items: flex-start;
     margin-bottom: 0.5rem;
 }
+
+.t-account-body strong {
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
 .t-account-footer {
     padding-top: 1rem;
     border-top: 1px dashed #d1d5db;
 }
+
 .t-account-footer strong {
     font-size: 0.9rem;
     font-weight: 600;
     color: #4b5563;
 }
+
 .t-account-footer span {
     font-family: monospace;
 }
 
+/* ------------------- Tabla de Asientos ------------------- */
 .table-contable {
     width: 100%;
     border-collapse: collapse;
@@ -120,24 +207,28 @@
     padding: 0.75rem 1rem;
     border: 1px solid #e5e7eb;
 }
+
 .table-contable thead th {
     background-color: #4b5563;
     color: #ffffff;
     font-weight: 600;
     text-align: left;
 }
+
 .table-contable tbody tr:nth-child(even) {
     background-color: #f3f4f6;
 }
+
 .table-contable tbody tr:hover {
     background-color: #e5e7eb;
 }
+
 .table-contable .text-end {
     text-align: right;
     font-family: monospace;
     font-weight: 500;
-    width: 10%;
 }
+
 .table-contable tfoot td {
     border-top: 3px solid #1f2937;
     font-size: 1rem;
@@ -145,47 +236,100 @@
     background-color: #e5e7eb;
 }
 
+/* ------------------- Colores de saldo ------------------- */
 .balance-ok {
     color: #10b981;
     font-weight: 700;
 }
+
 .balance-fail {
     color: #ef4444;
     font-weight: 700;
 }
+
 .saldo-deudor {
     color: #3b82f6;
     font-weight: 700;
 }
+
 .saldo-acreedor {
     color: #ef4444;
     font-weight: 700;
 }
 
-.btn-back {
-    display: inline-block;
-    padding: 0.6rem 1.5rem;
-    background-color: #6b7280;
-    color: #ffffff;
-    border-radius: 0.5rem;
-    text-decoration: none;
-    transition: background-color 0.3s;
-}
-.btn-back:hover {
-    background-color: #4b5563;
-}
-
-.full-width {
-    grid-column: 1 / -1;
-}
+/* ------------------- Botones Asientos ------------------- */
 .asiento-separator {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+    margin: 2rem 0;
     border-top: 2px dashed #d1d5db;
 }
+
+.asiento-header-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+    .asiento-header-container {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
 .asiento-header {
     font-size: 1.15rem;
     font-weight: 600;
     color: #3b82f6;
-    margin-bottom: 0.5rem;
+}
+
+.asiento-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.asiento-actions a,
+.asiento-actions button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.asiento-actions a {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.asiento-actions a:hover {
+    background-color: #2563eb;
+}
+
+.asiento-actions button {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
+.asiento-actions button:hover {
+    background-color: #dc2626;
+}
+
+@media (max-width: 639px) {
+    .asiento-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .asiento-actions a,
+    .asiento-actions button {
+        width: 100%;
+        justify-content: center;
+    }
 }

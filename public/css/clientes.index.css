@@ -42,11 +42,11 @@ body {
    Encabezado
    ================================================== */
 .page-header {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--color-border);
-    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ffffff;
 }
+
 
 /* ==================================================
    Tarjeta principal
