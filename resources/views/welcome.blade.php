@@ -3,7 +3,7 @@
 <div class="welcome-card">
     {{-- <img src="{{ asset('utils/logo.jpg') }}" alt="Logo"> --}}
     <img src="{{ asset('utils/logo-2.png') }}" alt="Logo2">
-    <h1>SISTEMA CONTABLE</h1>
+    <h1>(NOMBRE) - CONTABLE</h1>
     <p>Gestiona clientes, asientos y reportes de manera eficiente y profesional.</p>
 
     <div class="buttons">

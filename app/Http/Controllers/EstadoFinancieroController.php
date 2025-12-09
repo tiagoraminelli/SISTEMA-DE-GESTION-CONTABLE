@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CuentaContable;
+use App\Models\AsientoContable;
 use App\Models\Cliente;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +27,6 @@ class EstadoFinancieroController extends Controller
                 $clienteId = null;
             }
         }
-
         // Inicializar todas las colecciones y totales a cero/vacío
         $cuentasConSaldo = collect();
         $totalActivo = 0;
@@ -142,6 +143,7 @@ class EstadoFinancieroController extends Controller
             'totalActivo',
             'totalPasivo',
             'totalPatrimonio'
+
         ));
     }
 }
