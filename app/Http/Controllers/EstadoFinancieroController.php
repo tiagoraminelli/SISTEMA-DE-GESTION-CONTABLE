@@ -146,4 +146,65 @@ class EstadoFinancieroController extends Controller
 
         ));
     }
+
+    public function resultados(Request $request)
+    {
+        $clienteId   = $request->input('cliente_id');
+        $fechaInicio = $request->input('fecha_inicio');
+        $fechaFin    = $request->input('fecha_fin');
+
+        // Obtener lista de clientes para el dropdown
+        $clientes = Cliente::orderBy('RazonSocial')->get(['idCliente', 'RazonSocial']);
+
+        $ingresos = collect();
+        $egresos  = collect();
+        $totalIngresos = 0;
+        $totalEgresos = 0;
+        $resultadoEjercicio = 0;
+
+        if ($clienteId) {
+            // INGRESOS
+            $ingresos = DB::table('cuentas_contables as cc')
+                ->select('cc.nombre', DB::raw('SUM(mc.haber - mc.debe) as saldo'))
+                ->join('movimientos_contables as mc', 'cc.idCuentaContable', '=', 'mc.CuentaContable_id')
+                ->join('asientos_contables as ac', 'mc.AsientoContable_id', '=', 'ac.idAsiento')
+                ->where('ac.Cliente_id', $clienteId)
+                ->where('cc.tipo', 'Resultado Positivo');
+
+            if ($fechaInicio) $ingresos->where('ac.fecha', '>=', $fechaInicio);
+            if ($fechaFin)    $ingresos->where('ac.fecha', '<=', $fechaFin);
+
+            $ingresos = $ingresos->groupBy('cc.nombre')->get();
+            $totalIngresos = $ingresos->sum('saldo');
+
+            // EGRESOS
+            $egresos = DB::table('cuentas_contables as cc')
+                ->select('cc.nombre', DB::raw('SUM(mc.debe - mc.haber) as saldo'))
+                ->join('movimientos_contables as mc', 'cc.idCuentaContable', '=', 'mc.CuentaContable_id')
+                ->join('asientos_contables as ac', 'mc.AsientoContable_id', '=', 'ac.idAsiento')
+                ->where('ac.Cliente_id', $clienteId)
+                ->where('cc.tipo', 'Resultado Negativo');
+
+            if ($fechaInicio) $egresos->where('ac.fecha', '>=', $fechaInicio);
+            if ($fechaFin)    $egresos->where('ac.fecha', '<=', $fechaFin);
+
+            $egresos = $egresos->groupBy('cc.nombre')->get();
+            $totalEgresos = $egresos->sum('saldo');
+
+            $resultadoEjercicio = $totalIngresos - $totalEgresos;
+        }
+
+        return view('estado_financiero.resultados', compact(
+            'ingresos',
+            'egresos',
+            'totalIngresos',
+            'totalEgresos',
+            'resultadoEjercicio',
+            'clienteId',
+            'fechaInicio',
+            'fechaFin',
+            'clientes' // <-- agregar $clientes
+        ));
+    }
+
 }

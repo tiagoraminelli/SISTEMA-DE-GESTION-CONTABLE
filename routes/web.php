@@ -21,13 +21,18 @@ Route::middleware(['auth'])->group(function () {
     // Rutas para asientos contables
     Route::resource('asiento_contable', AsientoContableController::class);
 
-    // Rutas para estado financiero
+    // Estado de Situación Financiera
     Route::get('estado_financiero', [App\Http\Controllers\EstadoFinancieroController::class, 'index'])
-         ->name('estado_financiero.index');
+        ->name('estado_financiero.index');
+
+    // Estado de Resultados
+    Route::get('estado_financiero/resultados', [App\Http\Controllers\EstadoFinancieroController::class, 'resultados'])
+        ->name('estado_financiero.resultados');
+
+
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
 });
 
 
