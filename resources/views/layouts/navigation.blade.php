@@ -60,6 +60,11 @@
                             <x-dropdown-link :href="route('estado_financiero.resultados')" :active="request()->routeIs('estado_financiero.resultados')">
                                 {{ __('Estado de Resultados') }}
                             </x-dropdown-link>
+
+                            {{-- <!-- Detalle -->
+                            <x-dropdown-link :href="route('estado_financiero.detalle')" :active="request()->routeIs('estado_financiero.detalle')">
+                                {{ __('Detalle') }}
+                            </x-dropdown-link> --}}
                         </x-slot>
                     </x-dropdown>
                 </div>

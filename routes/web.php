@@ -29,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('estado_financiero/resultados', [App\Http\Controllers\EstadoFinancieroController::class, 'resultados'])
         ->name('estado_financiero.resultados');
 
+    Route::get('estado_financiero/detalle', [EstadoFinancieroController::class, 'ecuacionDinamica'])
+        ->name('estado_financiero.detalle');
 
 
     // Dashboard

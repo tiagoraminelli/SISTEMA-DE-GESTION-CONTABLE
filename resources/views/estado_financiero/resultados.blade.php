@@ -5,32 +5,24 @@
         </h2>
     </x-slot>
 
-    {{-- El contenedor principal 'py-6' mantiene el centrado vertical --}}
     <div class="py-6">
-        {{-- ESTE CONTENEDOR ES EL QUE CONTROLA EL CENTRADO HORIZONTAL --}}
-        {{-- max-w-6xl: Define el ancho máximo (centrado). mx-auto: Centra el bloque. --}}
-        <div class="max-w-6xl mx-center sm:px-4 lg:px-6" style="display: flex; justify-content: center;">
+        <div class="max-w-6xl mx-auto sm:px-4 lg:px-6" style="display: flex; justify-content: center;">
 
-            {{-- Contenedor FLEX para las dos columnas --}}
             <div class="flex flex-col lg:flex-row gap-8">
 
-                {{-- Columna Izquierda: FORMULARIO DE FILTRO (1/3) --}}
+                {{-- Filtros --}}
                 <div class="lg:w-1/3 p-6 bg-white dark:bg-gray-800 shadow-xl sm:rounded-xl">
                     <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Filtros</h3>
 
-                    <form method="GET" action="{{ url()->current() }}"
-                        class="grid grid-cols-1 gap-4 items-end">
-
+                    <form method="GET" action="{{ url()->current() }}" class="grid grid-cols-1 gap-4 items-end">
                         {{-- Cliente --}}
                         <div>
-                            <label for="cliente_id"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cliente:</label>
+                            <label for="cliente_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cliente:</label>
                             <select name="cliente_id" id="cliente_id"
                                 class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm rounded-lg shadow-sm w-full py-2">
                                 <option value="">-- Seleccione Cliente --</option>
                                 @foreach ($clientes as $c)
-                                    <option value="{{ $c->idCliente }}"
-                                        {{ isset($clienteId) && $clienteId == $c->idCliente ? 'selected' : '' }}>
+                                    <option value="{{ $c->idCliente }}" {{ isset($clienteId) && $clienteId == $c->idCliente ? 'selected' : '' }}>
                                         {{ $c->RazonSocial }}
                                     </option>
                                 @endforeach
@@ -39,16 +31,14 @@
 
                         {{-- Fecha Inicio --}}
                         <div>
-                            <label for="fecha_inicio"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Desde:</label>
+                            <label for="fecha_inicio" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Desde:</label>
                             <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ $fechaInicio ?? '' }}"
                                 class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm rounded-lg shadow-sm w-full py-2">
                         </div>
 
                         {{-- Fecha Fin --}}
                         <div>
-                            <label for="fecha_fin"
-                                class="block text-sm font-medium text-gray-700 dark:text-gray-300">Hasta:</label>
+                            <label for="fecha_fin" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Hasta:</label>
                             <input type="date" name="fecha_fin" id="fecha_fin" value="{{ $fechaFin ?? '' }}"
                                 class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 text-sm rounded-lg shadow-sm w-full py-2">
                         </div>
@@ -60,14 +50,12 @@
                                 Aplicar Filtros
                             </button>
                         </div>
-
                     </form>
                 </div>
 
-                {{-- Columna Derecha: TABLA DE ESTADO DE RESULTADOS (2/3) --}}
+                {{-- Tabla --}}
                 <div class="lg:w-2/3 bg-white dark:bg-gray-800 shadow-xl sm:rounded-xl p-6">
                     <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Resultado Detallado</h3>
-
                     <table class="w-full text-sm sm:text-base text-gray-900 dark:text-gray-200">
                         <tbody>
                             {{-- INGRESOS --}}
@@ -114,4 +102,22 @@
             </div>
         </div>
     </div>
+
+    {{-- Select2 --}}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#cliente_id').select2({
+                theme: 'classic',
+                width: '100%',
+                placeholder: "-- Seleccione Cliente --",
+                allowClear: true
+            });
+
+            // Aplicar estilos Tailwind a Select2
+            $('.select2-container--classic .select2-selection').addClass('dark:bg-gray-900 dark:text-gray-300 border-gray-300 dark:border-gray-700 rounded-lg py-2 px-3');
+        });
+    </script>
 </x-app-layout>

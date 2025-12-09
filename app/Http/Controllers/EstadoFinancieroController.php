@@ -207,4 +207,87 @@ class EstadoFinancieroController extends Controller
         ));
     }
 
+public function ecuacionDinamica(Request $request)
+{
+    $clienteId   = $request->input('cliente_id');
+    $fechaInicio = $request->input('fecha_inicio');
+    $fechaFin    = $request->input('fecha_fin');
+
+    $cliente = null;
+    $cuentasAgrupadas = []; // Detalle de las cuentas agrupadas por tipo
+
+    // Definimos los tipos de cuenta
+    $tiposContables = [
+        'Activo', 'Pasivo', 'Patrimonio Neto',
+        'Resultado Positivo', 'Resultado Negativo'
+    ];
+
+    // Inicialización de los totales para la Ecuación Fundamental
+    $totales = array_fill_keys(array_map('strtolower', $tiposContables), 0.0);
+
+    // 1. Cargar datos del cliente con sus asientos filtrando fechas
+    if ($clienteId) {
+        $cliente = Cliente::with(['asientosContables' => function($query) use ($fechaInicio, $fechaFin) {
+            if ($fechaInicio) $query->where('fecha', '>=', $fechaInicio);
+            if ($fechaFin) $query->where('fecha', '<=', $fechaFin);
+            $query->with('movimientos.cuentaContable');
+        }])->find($clienteId);
+
+        if ($cliente && $cliente->asientosContables->isNotEmpty()) {
+            // 2. Acumulación de Debe/Haber por cuenta
+            foreach ($cliente->asientosContables as $asiento) {
+                foreach ($asiento->movimientos as $mov) {
+                    $cuenta = $mov->cuentaContable;
+                    if (!$cuenta) continue;
+
+                    $nombreCuenta = $cuenta->nombre;
+                    $tipo = strtolower($cuenta->tipo);
+
+                    if (!isset($cuentasAgrupadas[$tipo][$nombreCuenta])) {
+                        $cuentasAgrupadas[$tipo][$nombreCuenta] = [
+                            'nombre' => $nombreCuenta,
+                            'debe'   => 0.0,
+                            'haber'  => 0.0,
+                        ];
+                    }
+
+                    $cuentasAgrupadas[$tipo][$nombreCuenta]['debe']  += $mov->debe;
+                    $cuentasAgrupadas[$tipo][$nombreCuenta]['haber'] += $mov->haber;
+                }
+            }
+
+            // 3. Calcular saldo por cuenta según naturaleza y acumular totales
+            foreach ($cuentasAgrupadas as $tipo => $cuentas) {
+                foreach ($cuentas as $nombre => $data) {
+                    $saldo = 0.0;
+
+                    if (in_array($tipo, ['activo', 'resultado negativo'])) {
+                        $saldo = $data['debe'] - $data['haber'];
+                    } elseif (in_array($tipo, ['pasivo', 'patrimonio neto', 'resultado positivo'])) {
+                        $saldo = $data['haber'] - $data['debe'];
+                    }
+
+                    $cuentasAgrupadas[$tipo][$nombre]['saldo'] = $saldo;
+                    $totales[$tipo] += $saldo;
+                }
+            }
+        }
+    }
+
+    // Lista de clientes para el filtro
+    $clientes = Cliente::all();
+
+    // PASO CLAVE: pasar $cuentasAgrupadas a la vista en vez de $movimientosAgrupados
+    return view('estado_financiero.detalle', compact(
+        'cuentasAgrupadas',
+        'totales',
+        'cliente',
+        'clientes',
+        'clienteId',
+        'fechaInicio',
+        'fechaFin'
+    ));
+}
+
+
 }
