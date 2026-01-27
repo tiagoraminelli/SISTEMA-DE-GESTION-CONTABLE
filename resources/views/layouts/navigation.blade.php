@@ -32,6 +32,13 @@
                     </x-nav-link>
                 </div>
 
+                <!-- Asientos Contables -->
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('asiento_contable.index')" :active="request()->routeIs('asiento_contable.index')">
+                        {{ __('Asientos Contables') }}
+                    </x-nav-link>
+                </div>
+
                 <!-- Estado Financiero Dropdown -->
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-dropdown align="right" width="48">
@@ -61,10 +68,7 @@
                                 {{ __('Estado de Resultados') }}
                             </x-dropdown-link>
 
-                            {{-- <!-- Detalle -->
-                            <x-dropdown-link :href="route('estado_financiero.detalle')" :active="request()->routeIs('estado_financiero.detalle')">
-                                {{ __('Detalle') }}
-                            </x-dropdown-link> --}}
+
                         </x-slot>
                     </x-dropdown>
                 </div>
